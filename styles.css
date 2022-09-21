@@ -52,10 +52,7 @@
 
 @media only screen and (max-width: 600px) {
           .button_div{
-                    position: fixed;
-                    bottom: 0;
-                    width: 100%;
-                    padding-left:50%;
+                    position: sticky;
           }
           .button-35{
                     background-color: rgba(255, 255, 255, 0);

@@ -1,76 +1,47 @@
-from turtle import up
+from email import message
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackContext, MessageHandler, Updater, MessageHandler, filters
-admin_list = [583427713]
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler, MessageHandler, Updater, MessageHandler, filters
+admin_list = [583427713, 1236034796]
 
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    print(update)
-    print("hello : ")
-
-    if "text" in update.message.to_dict():
-        print("Yessss")
-    else:
-        print("Nooooooo")
-    first_name = update.effective_user.first_name
-    last_name = update.effective_user.last_name
-    username = update.effective_user.username
-    if first_name == None or last_name == None or username == None:
-        pass
-    else:
-        print("first name :" + first_name)
-        print("last name :" + last_name)
-        print("username :" + username)
-    user_id = update.effective_user.id
-#     print(update.message.text)
-#     if user_id in admin_list:
-
-#         await update.message.reply_text(f'Hello {update.effective_user.first_name} {update.effective_user.last_name} your id is : {user_id}')
-#     else:
-    await update.message.reply_text(f"your first name is : {first_name} and your last name is : {last_name} with username of : {username} and your id is {user_id} ")
+    await update.message.reply_text("hello please send a file of image to upload it to the website \n for help please send /help")
 
 
-# async def start1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-#     await update.message.reply_text('give a file')
-#     chat_id = update.message.chat_id
-#     fileID = update.message['document']['file_id']
-#     context.bot.sendDocument(chat_id=chat_id,
-#                              caption='This is the file that you have sent to bot',
-#                              document=fileID)
-
-async def download(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    print("hello")
-    print(update.message)
-    if "text" in update.message.to_dict():
-        print("this is text")
-    elif "document" in update.message.to_dict():
-        print("this is file")
-    else:
-        print("this is photo")
-#     file_type = update.message["document"]["mime_type"]
-    await update.message.reply_text(update.message)
-
-
-async def image(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    print("hello")
-    print(update.message)
-    file_type = update.message["document"]["mime_type"]
-    await update.message.reply_text(f"your file type where {file_type}")
+async def photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    await update.message.reply_text(f"this is an image please send a file")
 
 
 async def text(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    print("hello")
-    print(update.message)
-    file_type = update.message
-    await update.message.reply_text(f"your file type where {file_type}")
+    file_type = update.message.text
+    await update.message.reply_text(f"your text where {file_type} for help please send /help")
+
+
+async def document(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    user_id = update.effective_user.id
+    if user_id in admin_list:
+        print(update.message)
+        if "text" in update.message.to_dict():
+            print("this is text")
+            await update.message.reply_text("this is an text please send /help to help you")
+        elif "document" in update.message.to_dict():
+            file_type = update.message["document"]["mime_type"]
+            if file_type == "image/png" or file_type == "image/jpeg":
+                await update.message.reply_text("this is an file thank you")
+                file_id = update.message.document.file_id
+                print("file id is : ", file_id)
+            else:
+                await update.message.reply_text("please send an pnj file or jpg file")
+        else:
+            print("this is photo")
+    else:
+        await update.message.reply_text(f"your id is {user_id} and you are not an admin")
 
 
 app = ApplicationBuilder().token(
     '5382529868:AAFtgxfYtQEwFbfChOatXMtc0FqEj13RHcM').build()
 app.add_handler(CommandHandler("start", start))
-# app.add_handler(CommandHandler("start1", start1))
-app.add_handler(MessageHandler(filters.ALL, download))
-# app.add_handler(MessageHandler(filters.Document.Category('image/'), image))
-# app.add_handler(MessageHandler(filters.TEXT, text))
-
+app.add_handler(MessageHandler(filters.TEXT, text))
+app.add_handler(MessageHandler(filters.Document.ALL, document))
+app.add_handler(MessageHandler(filters.PHOTO, photo))
 app.run_polling()

@@ -6,13 +6,21 @@ con = sqlite3.connect("photography.db")
 cur = con.cursor()
 
 
-# def add_values():
-cur.execute("INSERT INTO photos(file_name, file_download_id, file_path, owner_id, is_deleted) VALUES ('FL.jpeg', '/uploads/me.jpeg', 16, 10, false)")
+def add_values(file_name, file_download_id, file_path, owner_id):
+    con = sqlite3.connect("photography.db")
+    cur = con.cursor()
+    cur.execute(
+        f"INSERT INTO photos(file_name, file_download_id, file_path, owner_id) VALUES ('{file_name}', '{file_download_id}', '{file_path}', {owner_id})")
+    con.commit()
+    cur.close()
+    con.close()
 
+# add_values("hello", "hi", "aaa", 12)
 
-# add_values()
 
 cur.execute("SELECT * FROM photos")
 rows = cur.fetchall()
 for row in rows:
     print(row)
+# cur.close()
+# con.close()

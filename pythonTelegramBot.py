@@ -1,6 +1,10 @@
-from email import message
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from tkinter import N
+from tkinter.messagebox import NO
+import tracemalloc
+import os
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot, File
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler, MessageHandler, Updater, MessageHandler, filters
+
 admin_list = [583427713, 1236034796]
 
 
@@ -29,7 +33,13 @@ async def document(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             if file_type == "image/png" or file_type == "image/jpeg":
                 await update.message.reply_text("this is an file thank you")
                 file_id = update.message.document.file_id
+                fileName = update.message.document.file_name
                 print("file id is : ", file_id)
+                # here is the code to get the file
+                currentFile = await update.message.document.get_file()
+                await currentFile.download("uploads/" + fileName)
+                # await File.download(update.message)
+
             else:
                 await update.message.reply_text("please send an pnj file or jpg file")
         else:

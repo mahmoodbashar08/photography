@@ -1,4 +1,5 @@
 from db import add_values
+from randomstring import myRandomString
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot, File
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackQueryHandler, MessageHandler, Updater, MessageHandler, filters
 
@@ -29,18 +30,16 @@ async def document(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         file_type = update.message["document"]["mime_type"]
         if file_type == "image/png" or file_type == "image/jpeg":
             await update.message.reply_text("this is an file thank you")
-            file_id = update.message.document.file_id
+            fileId = update.message.document.file_id
             fileName = update.message.document.file_name
-            print("file id is : ", file_id)
+            print("file id is : ", fileId)
             # here is the code to get the file
-            length = 6
-            letters = string.ascii_lowercase
-            result_str = ''.join(random.choice(letters) for i in range(length))
-            print("Random string of length", length, "is:", result_str)
 
             currentFile = await update.message.document.get_file()
             await currentFile.download("uploads/" + fileName)
-            add_values(fileName, "uploads/" + fileName, file_id, user_id)
+            file_download_id = myRandomString()
+            add_values(fileName, file_download_id,
+                       'uploads/' + fileName, user_id)
             # await File.download(update.message)
 
         else:

@@ -37,7 +37,6 @@
 from flask import Flask
 from flask import request
 from flask import Response
-import requests
 
 
 TOKEN = "5382529868:AAFtgxfYtQEwFbfChOatXMtc0FqEj13RHcM"

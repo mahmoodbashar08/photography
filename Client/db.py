@@ -15,12 +15,22 @@ def add_values(file_name, file_download_id, file_path, owner_id):
     cur.close()
     con.close()
 
+
+def get_values(file_download_id):
+    con = sqlite3.connect("photography.db")
+    cur = con.cursor()
+    cur.execute(
+        f"SELECT * from photos Where file_download_id = '{file_download_id}'")
+    con.commit()
+    cur.close()
+    con.close()
+
 # add_values("hello", "hi", "aaa", 12)
 
 
-cur.execute("SELECT * FROM photos")
-rows = cur.fetchall()
-for row in rows:
-    print(row)
-# cur.close()
-# con.close()
+# cur.execute("SELECT * FROM photos")
+# rows = cur.fetchall()
+# for row in rows:
+#     print(row)
+cur.close()
+con.close()

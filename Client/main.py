@@ -28,18 +28,18 @@ def document(update, context):
     elif "document" in update.message.to_dict():
         file_type = update.message["document"]["mime_type"]
         if file_type == "image/png" or file_type == "image/jpeg":
-            update.message.reply_text("this is an file thank you")
             fileId = update.message.document.file_id
             fileName = update.message.document.file_name
             print("file id is : ", fileId)
             # here is the code to get the file
 
             currentFile = update.message.document.get_file()
-            currentFile.download("uploads/" + fileName)
+            currentFile.download("static/uploads/" + fileName)
             file_download_id = myRandomString()
             add_values(fileName, file_download_id,
                        'uploads/' + fileName, user_id)
             # await File.download(update.message)
+            update.message.reply_text("your website/"+file_download_id)
 
         else:
             update.message.reply_text("please send an pnj file or jpg file")

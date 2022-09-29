@@ -1,2 +1,2 @@
-cur.close()
-# con.close()
+t))
+app.add_handler(MessageHandler(filters.PHOTO, photo))

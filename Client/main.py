@@ -1,103 +1,60 @@
-# # from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-# # from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes, CallbackContext, MessageHandler, Updater, MessageHandler, filters
-# # admin_list = [5834427713]
-
-
-# # async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-# #     user_id = update.effective_user.id
-# #     if user_id in admin_list:
-# #         await update.message.reply_text(f'Hello {update.effective_user.first_name} {update.effective_user.last_name} your id is : {user_id}')
-# #     else:
-# #         await update.message.reply_text(f"your id is {user_id} and you are not an admin")
-
-
-# # # async def start1(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-# # #     await update.message.reply_text('give a file')
-# # #     chat_id = update.message.chat_id
-# # #     fileID = update.message['document']['file_id']
-# # #     context.bot.sendDocument(chat_id=chat_id,
-# # #                              caption='This is the file that you have sent to bot',
-# # #                              document=fileID)
-# # def downloader(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-# #     context.bot.get_file(update.message.document).download()
-
-# #     # writing to a custom file
-# #     with open("custom/file.doc", 'wb') as f:
-# #         context.bot.get_file(update.message.document).download(out=f)
-
-
-# # app = ApplicationBuilder().token(
-# #     '5382529868:AAFtgxfYtQEwFbfChOatXMtc0FqEj13RHcM').build()
-# # app.add_handler(CommandHandler("start", start))
-# # # app.add_handler(CommandHandler("start1", start1))
-# # app.add_handler(MessageHandler(filters.document, downloader))
-
-
-# # app.run_polling()
-from flask import Flask
-from flask import request
-from flask import Response
-
-
-TOKEN = "5382529868:AAFtgxfYtQEwFbfChOatXMtc0FqEj13RHcM"
-app = Flask(__name__)
-
-
-def parse_message(message):
-    print("message-->", message)
-    chat_id = message['message']['chat']['id']
-    first_name = message['message']["from"]["first_name"]
-    if "document" in message['message']:
-        if message['message']['document']["mime_type"]:
-            print("file id : ", message['message']['document']["file_id"])
-            myFileId = message['message']['document']["file_id"]
-
-    else:
-        txt = message['message']['text']
-        print("txt-->", txt)
-    print("chat_id-->", chat_id)
-
-    return chat_id, first_name
-
-
-def tel_send_message(chat_id, text):
-    url = f'https://api.telegram.org/bot{TOKEN}/sendMessage'
-    payload = {
-        'chat_id': chat_id,
-        'text': text
-    }
-
-    r = requests.post(url, json=payload)
-    return r
-
-
+from db import add_values
+from randomstring import myRandomString
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, Bot, File
+from telegram.ext import  CommandHandler, ContextTypes, CallbackQueryHandler, MessageHandler, Updater, MessageHandler, filters
 admin_list = [583427713, 1236034796]
 
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'POST':
-        msg = request.get_json()
-        chat_id, first_name = parse_message(msg)
-        if chat_id in admin_list:
-            print("an admin")
-            tel_send_message(
-                chat_id, f'hello {first_name} your id : {chat_id} I love you so much will you marry me? ❤️')
-            # print("type is ", txt.type)
-            # if txt == "/hi":
-            #     tel_send_message(chat_id, "Hello!!")
-            # else:
-            #     tel_send_message(chat_id, 'from webhook')
+def start(update, context):
+    update.message.reply_text("hello please send a file of image to upload it to the website \n for help please send /help")
 
-            return Response('ok', status=200)
+
+def photo(update, context):
+    update.message.reply_text(f"this is an image please send a file")
+
+
+def text(update, context):
+    file_type = update.message.text
+    update.message.reply_text(f"your text where {file_type} for help please send /help")
+
+
+def document(update, context):
+    user_id = update.effective_user.id
+    # if user_id in admin_list:
+    print(update.message)
+    if "text" in update.message.to_dict():
+        print("this is text")
+        update.message.reply_text("this is an text please send /help to help you")
+    elif "document" in update.message.to_dict():
+        file_type = update.message["document"]["mime_type"]
+        if file_type == "image/png" or file_type == "image/jpeg":
+            update.message.reply_text("this is an file thank you")
+            fileId = update.message.document.file_id
+            fileName = update.message.document.file_name
+            print("file id is : ", fileId)
+            # here is the code to get the file
+
+            currentFile = update.message.document.get_file()
+            currentFile.download("uploads/" + fileName)
+            file_download_id = myRandomString()
+            add_values(fileName, file_download_id,
+                       'uploads/' + fileName, user_id)
+            # await File.download(update.message)
+
         else:
-            tel_send_message(
-                chat_id, f'your id is :{chat_id} and you are not an admin')
-            print("not an admin")
-            return Response('ok', status=200)
+            update.message.reply_text("please send an pnj file or jpg file")
     else:
-        return "<h1>Welcome!</h1>"
+        print("this is photo")
+    # else:
+    #     await update.message.reply_text(f"your id is {user_id} and you are not an admin")
+updater = Updater(
+    "5382529868:AAFtgxfYtQEwFbfChOatXMtc0FqEj13RHcM", use_context=True)
+# app = ApplicationBuilder().token(
+#     '5382529868:AAFtgxfYtQEwFbfChOatXMtc0FqEj13RHcM').build()
 
-
-if __name__ == '__main__':
-    app.run(debug=True)
+dp = updater.dispatcher
+dp.add_handler(CommandHandler("start", start))
+dp.add_handler(MessageHandler(filters.Filters.text, text))
+dp.add_handler(MessageHandler(filters.Filters.document, document))
+dp.add_handler(MessageHandler(filters.Filters.photo, photo))
+updater.start_polling()

@@ -27,3 +27,5 @@ def myRandomString():
     finalList = finalList[0:6]
     finalString = ''.join(finalList)
     return(finalString)
+
+# the output of this file is a random string

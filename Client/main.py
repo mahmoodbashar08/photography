@@ -1,21 +1,30 @@
 from db import add_values
 from randomstring import myRandomString
 from telegram.ext import  CommandHandler, MessageHandler, Updater, MessageHandler, filters
-admin_list = [] # add list of user id who can use the telegram bot
+admin_list = []  # add list of user id who can use the telegram bot
 
 
 def start(update, context):
-    update.message.reply_text("hello please send a file of image to upload it to the website \n for help please send /help")
-
+    user_id = update.effective_user.id
+    if user_id in admin_list:
+        update.message.reply_text("hello please send a file of image to upload it to the website \n for help please send /help")
+    else:
+        update.message.reply_text(f"your id is {user_id} and you are not an admin")
 
 def photo(update, context):
-    update.message.reply_text(f"this is an image please send a file")
-
+    user_id = update.effective_user.id
+    if user_id in admin_list:
+        update.message.reply_text(f"this is an image please send a file")
+    else:
+        update.message.reply_text(f"your id is {user_id} and you are not an admin")
 
 def text(update, context):
     file_type = update.message.text
-    update.message.reply_text(f"your text where {file_type} for help please send /help")
-
+    user_id = update.effective_user.id
+    if user_id in admin_list:
+        update.message.reply_text(f"your text where {file_type} for help please send /help")
+    else:
+        update.message.reply_text(f"your id is {user_id} and you are not an admin")
 
 def document(update, context):
     user_id = update.effective_user.id
@@ -37,14 +46,14 @@ def document(update, context):
                 file_download_id = myRandomString()
                 add_values(fileName, file_download_id,
                         'uploads/' + fileName, user_id)
-                update.message.reply_text("your website/"+file_download_id)
+                update.message.reply_text("your website/photos/"+file_download_id)
 
             else:
                 update.message.reply_text("please send an pnj file or jpg file")  
     else:
         update.message.reply_text(f"your id is {user_id} and you are not an admin")
 updater = Updater(
-    "bot Token", use_context=True)
+    "bot token", use_context=True)
 
 dp = updater.dispatcher
 dp.add_handler(CommandHandler("start", start))

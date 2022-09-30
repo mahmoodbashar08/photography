@@ -1,12 +1,9 @@
 import sqlite3
 
-
-# INSERT INTO photos(file_name, file_path, file_download_id, owner_id, is_deleted) VALUES ("F.jpeg", "/uploads/me.jpeg", 12, 01, false)
 con = sqlite3.connect("photography.db")
 cur = con.cursor()
 
-
-def add_values(file_name, file_download_id, file_path, owner_id):
+def add_values(file_name, file_download_id, file_path, owner_id): # this function to add values to the database
     con = sqlite3.connect("photography.db")
     cur = con.cursor()
     cur.execute(
@@ -16,7 +13,7 @@ def add_values(file_name, file_download_id, file_path, owner_id):
     con.close()
 
 
-def get_values(file_download_id):
+def get_values(file_download_id):  # this function to get values from the database and send it to the bot 
     con = sqlite3.connect("photography.db")
     cur = con.cursor()
     cur.execute(
@@ -25,12 +22,5 @@ def get_values(file_download_id):
     cur.close()
     con.close()
 
-# add_values("hello", "hi", "aaa", 12)
-
-
-# cur.execute("SELECT * FROM photos")
-# rows = cur.fetchall()
-# for row in rows:
-#     print(row)
 cur.close()
 con.close()

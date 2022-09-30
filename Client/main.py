@@ -22,7 +22,6 @@ def document(update, context):
     if user_id in admin_list:
         print(update.message)
         if "text" in update.message.to_dict():
-            print("this is text")
             update.message.reply_text("this is an text please send /help to help you")
         elif "document" in update.message.to_dict():
             file_type = update.message["document"]["mime_type"]
@@ -41,9 +40,7 @@ def document(update, context):
                 update.message.reply_text("your website/"+file_download_id)
 
             else:
-                update.message.reply_text("please send an pnj file or jpg file")
-        else:
-            print("this is photo")
+                update.message.reply_text("please send an pnj file or jpg file")  
     else:
         update.message.reply_text(f"your id is {user_id} and you are not an admin")
 updater = Updater(
